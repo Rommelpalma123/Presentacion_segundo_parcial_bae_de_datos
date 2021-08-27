@@ -1,0 +1,112 @@
+-------------------------------------------- Trigger ------------------------------------------------------
+
+create or replace function dietavalor() returns trigger
+as $dietavalor$
+    declare
+		valordieta int;
+		valoringrediente int;
+begin
+		select costo_dieta into valordieta from dieta_realizadas where dieta_id = new.dieta_id;
+		select precio_ingrediente into valoringrediente from ingredientes WHERE id_ingredientes = new.id_ingredientes;
+        if(valordieta + valoringrediente > 30 ) then
+            raise exception 'La dieta no puede superar el precio de 30 $, el costo del ingrediente supera el valor de la dieta ';
+		else
+	
+			update dieta_realizadas set costo_dieta = (valordieta+ valoringrediente) where dieta_id = new.dieta_id;
+        end if;
+        return new;
+end;
+$dietavalor$
+language plpgsql;
+
+create trigger dietavalorTrigger before insert
+on relationship_28 for each row
+execute procedure dietavalor();
+
+
+
+
+-------------------------------------------- Cursor --------------------------------------------------------
+    1   ----------------------------
+
+DO $$ 
+DECLARE 
+		emp RECORD;
+		VALORES CURSOR FOR SELECT especialista_de_dieta,costo_dieta,tipo_de_dieta,
+		count(dieta_realizadas.personal_dieta_id) as cantidad_dietas_establecidas
+		FROM personal_de_dieta
+		inner join dieta_realizadas on personal_de_dieta.personal_dieta_id = dieta_realizadas.personal_dieta_id
+		group by especialista_de_dieta,costo_dieta,tipo_de_dieta
+		ORDER BY cantidad_dietas_establecidas ASC;
+BEGIN 
+FOR emp IN VALORES LOOP
+		RAISE NOTICE ' PERSONA_ENCARGADA: %       COSTO_DE_DIETA: %       DIETAS_ESTABLECIDAS: %          TIPO_DE_DIETA: %'  , 
+		emp.especialista_de_dieta, emp.costo_dieta,emp.cantidad_dietas_establecidas,emp.tipo_de_dieta;
+		END LOOP;
+END$$ 
+LANGUAGE PLPGSQL;
+
+
+    2  -----------------------------
+
+DO $$ 
+DECLARE 
+		emp RECORD;
+		VALORES CURSOR FOR SELECT especialista_de_dieta,costo_dieta,tipo_de_dieta,
+		count(dieta_realizadas.personal_dieta_id) as cantidad_dietas_establecidas
+		FROM personal_de_dieta
+		inner join dieta_realizadas on personal_de_dieta.personal_dieta_id = dieta_realizadas.personal_dieta_id
+		group by especialista_de_dieta,costo_dieta,tipo_de_dieta
+		ORDER BY cantidad_dietas_establecidas ASC;
+BEGIN 
+OPEN VALORES;
+FETCH VALORES INTO emp;
+		RAISE NOTICE ' PERSONA_ENCARGADA:%         COSTO_DE_DIETA: %      DIETAS_ESTABLECIDAS: %      TIPO_DE_DIETA: %'  , 
+		emp.especialista_de_dieta, emp.costo_dieta,emp.cantidad_dietas_establecidas,emp.tipo_de_dieta;
+FETCH VALORES INTO emp;
+		RAISE NOTICE ' PERSONA_ENCARGADA:%         COSTO_DE_DIETA: %      DIETAS_ESTABLECIDAS: %      TIPO_DE_DIETA: %'  , 
+		emp.especialista_de_dieta, emp.costo_dieta,emp.cantidad_dietas_establecidas,emp.tipo_de_dieta;
+FETCH VALORES INTO emp;
+		RAISE NOTICE ' PERSONA_ENCARGADA:%          COSTO_DE_DIETA: %      DIETAS_ESTABLECIDAS: %      TIPO_DE_DIETA: %'  , 
+		emp.especialista_de_dieta, emp.costo_dieta,emp.cantidad_dietas_establecidas,emp.tipo_de_dieta;
+FETCH VALORES INTO emp;
+		RAISE NOTICE ' PERSONA_ENCARGADA: %       COSTO_DE_DIETA: %      DIETAS_ESTABLECIDAS: %      TIPO_DE_DIETA: %'  , 
+		emp.especialista_de_dieta, emp.costo_dieta,emp.cantidad_dietas_establecidas,emp.tipo_de_dieta;
+FETCH VALORES INTO emp;
+		RAISE NOTICE ' PERSONA_ENCARGADA: %      COSTO_DE_DIETA: %      DIETAS_ESTABLECIDAS: %      TIPO_DE_DIETA: %'  , 
+		emp.especialista_de_dieta, emp.costo_dieta,emp.cantidad_dietas_establecidas,emp.tipo_de_dieta;
+FETCH VALORES INTO emp;
+		RAISE NOTICE ' PERSONA_ENCARGADA: %     COSTO_DE_DIETA: %      DIETAS_ESTABLECIDAS: %      TIPO_DE_DIETA: %'  , 
+		emp.especialista_de_dieta, emp.costo_dieta,emp.cantidad_dietas_establecidas,emp.tipo_de_dieta;
+END$$ 
+LANGUAGE PLPGSQL;
+
+
+
+
+------------------------------------------------ Procedimiento almacenado  -----------------------------------------------------
+
+
+
+CREATE OR REPLACE FUNCTION REPORTE_TOTAL_DIETAS( VARCHAR, INTEGER ) RETURNS MONEY AS 
+$$
+		SELECT SUM( COSTO_DIETA ) FROM personal_de_dieta
+		INNER JOIN dieta_realizadas on 
+		personal_de_dieta.personal_dieta_id = dieta_realizadas.personal_dieta_id
+		
+		WHERE 
+			    dieta_descripcion = $1 AND personal_de_dieta.personal_dieta_id = $2
+$$
+LANGUAGE SQL;
+
+SELECT REPORTE_TOTAL_DIETAS( 'DIETA MUY BAJA DE AZUCARES', 6); 
+
+
+-------------------------------------------------- consulta de Ireport ----------------------------------------------------
+
+select  nombre_canton as Canton_perteneciente,
+		count( pacientes_ancianos.id_pacientes) cantidad_personas_por_canton 
+from	canton 
+inner join  asilo on canton.id_canton = asilo.id_canton
+inner join  pacientes_ancianos on asilo.id_asilo = pacientes_ancianos.id_asilo
+group by Canton_perteneciente order by Canton_perteneciente asc ;

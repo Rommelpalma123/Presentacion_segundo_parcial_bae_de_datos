@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="38d8cde6-8003-4459-9887-eadfb773de61">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[select  nombre_canton as Canton_perteneciente,
+		count( pacientes_ancianos.id_pacientes)
+from	canton
+inner join  asilo on canton.id_canton = asilo.id_canton
+inner join  pacientes_ancianos on asilo.id_asilo = pacientes_ancianos.id_asilo
+group by Canton_perteneciente  order by Canton_perteneciente asc ;]]>
+	</queryString>
+	<field name="canton_perteneciente" class="java.lang.String"/>
+	<field name="count" class="java.lang.Long"/>
+	<title>
+		<band height="84" splitType="Stretch">
+			<staticText>
+				<reportElement x="58" y="0" width="449" height="20" uuid="d3e3955f-7a0f-4885-b0da-3447a0629119"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Registro de pacientes de tercera edad en los diferentes cantones de manabi ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="58" y="26" width="189" height="20" uuid="8965b7de-faab-4739-8d25-37edb6660319"/>
+				<text><![CDATA[Nombre: Rommel santiago palma plua ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="58" y="46" width="189" height="20" uuid="b663d2dc-d14a-45ab-99ca-b4657c430cb6"/>
+				<text><![CDATA[Fecha: 12 de agosto del 2021 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="343" y="26" width="189" height="20" uuid="2a705984-9a7c-4c1d-9851-fd19ac8c69fa"/>
+				<text><![CDATA[Paralelo: A]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="343" y="46" width="189" height="20" uuid="269b8a92-1293-444d-9392-48b2d7534cb1"/>
+				<text><![CDATA[Semestre: 5 semestre ]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="46" splitType="Stretch">
+			<rectangle>
+				<reportElement x="80" y="25" width="154" height="20" uuid="941c9c90-e673-423c-8477-c19ff16c4c35"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="92" y="26" width="100" height="20" uuid="51b65655-cf71-40c2-9509-5e43f643824c"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Cantones ]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="234" y="25" width="236" height="20" uuid="1d5af789-ef0c-4468-94b0-4c4792eae494"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="248" y="25" width="222" height="20" uuid="c2fed1e2-7f86-4726-8d26-3b5b5ce72036"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Resultados de los diferentes cantones ]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<rectangle>
+				<reportElement x="80" y="5" width="154" height="20" uuid="e712ef4a-5718-48e5-9133-32e563c41a99"/>
+			</rectangle>
+			<textField>
+				<reportElement x="92" y="5" width="100" height="20" uuid="77299d4c-86f4-4e33-9502-c4012f5b1f93"/>
+				<textFieldExpression><![CDATA[$F{canton_perteneciente}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="234" y="5" width="236" height="20" uuid="d4ef8755-741e-4c50-8158-03cc875d3c1f"/>
+			</rectangle>
+			<textField>
+				<reportElement x="248" y="5" width="100" height="20" uuid="cf311d61-2854-4388-81b5-3b613b31f3a7"/>
+				<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="305" splitType="Stretch">
+			<staticText>
+				<reportElement x="19" y="26" width="434" height="20" uuid="6f327f56-649b-4ac1-b7ba-5479a5af4f90"/>
+				<text><![CDATA[Resultado de los diferentes pacientes ancianos en cada canton ]]></text>
+			</staticText>
+			<bar3DChart>
+				<chart>
+					<reportElement x="19" y="58" width="513" height="233" uuid="abce2763-d7ca-41e1-9ec8-d4fa8d63400f"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{count}]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{canton_perteneciente}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{count}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+		</band>
+	</summary>
+</jasperReport>
